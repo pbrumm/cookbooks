@@ -121,6 +121,12 @@ if ["openvpn"]["type"] == "server"
     notifies :restart, "service[openvpn]"
   end
 elsif node["openvpn"]["type"] == "client"
+
+  directory "#{node["openvpn"]["client_key_dir"]}" do
+    owner "root"
+    group "root"
+    mode 0755
+  end
   template "/etc/openvpn/#{node["openvpn"]["client_name"]}.conf" do
     source "client.conf.erb"
     owner "root"
@@ -128,7 +134,19 @@ elsif node["openvpn"]["type"] == "client"
     mode 0644
     notifies :restart, "service[openvpn]"
   end
+  if node["openvpn"]["client_crt"]
+    file "#{node["openvpn"]["client_key_dir"]}/#{node["openvpn"]["client_name"]}.crt" do
+      content node["openvpn"]["client_crt"]
+      not_if { ::File.exists?("#{node["openvpn"]["client_key_dir"]}/#{node["openvpn"]["client_name"]}.crt") }
 
+    end
+  end
+  if node["openvpn"]["client_key"]
+    file "#{node["openvpn"]["client_key_dir"]}/#{node["openvpn"]["client_name"]}.key" do
+      content node["openvpn"]["client_key"]
+      not_if { ::File.exists?("#{node["openvpn"]["client_key_dir"]}/#{node["openvpn"]["client_name"]}.key") }
+    end
+  end
 end
 
 service "openvpn" do
