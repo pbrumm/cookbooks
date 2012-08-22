@@ -6,8 +6,8 @@ resolv-retry infinite
 nobind
 persist-key
 persist-tun
-ca ca.crt
-cert <%= @username %>.crt
-key <%= @username %>.key
+ca <%= node["openvpn"]["client_key_dir"] %>/ca.crt
+cert <%= node["openvpn"]["client_key_dir"] %>/<%= node["openvpn"]["client_name"] %>.crt
+key <%= node["openvpn"]["client_key_dir"] %>/<%= node["openvpn"]["client_name"] %>.key
 comp-lzo
 verb 3
