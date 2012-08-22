@@ -134,6 +134,13 @@ elsif node["openvpn"]["type"] == "client"
     mode 0644
     notifies :restart, "service[openvpn]"
   end
+  if node["openvpn"]["ca"]
+    file "#{node["openvpn"]["client_key_dir"]}/#{node["openvpn"]["ca"]}.crt" do
+      content node["openvpn"]["ca"]
+      not_if { ::File.exists?("#{node["openvpn"]["client_key_dir"]}/#{node["openvpn"]["ca"]}.crt") }
+
+    end
+  end
   if node["openvpn"]["client_crt"]
     file "#{node["openvpn"]["client_key_dir"]}/#{node["openvpn"]["client_name"]}.crt" do
       content node["openvpn"]["client_crt"]
